@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Social simulation dashboard for users, bots, posts, likes, and nested comments.">
+    <title>Social Guardrails Console</title>
+    <link rel="stylesheet" href="/css/styles.css?v=2">
+</head>
+<body>
+    <header class="topbar">
+        <a class="brand" href="#workspace" aria-label="Social Guardrails Console">
+            <span class="brand-mark">G</span>
+            <span>Guardrails</span>
+        </a>
+        <nav class="section-nav" aria-label="Page sections">
+            <a href="#workspace">Workspace</a>
+            <a href="#commentsPanel">Comments</a>
+            <a href="#activityPanel">Activity</a>
+        </nav>
+        <button class="btn btn-secondary btn-small" id="refreshBtn" type="button">Refresh</button>
+    </header>
+
+    <main class="page-shell">
+        <section class="screen-section hero-section" id="workspace" aria-label="Main workspace">
+            <div class="workspace-grid">
+                <aside class="side-stack" aria-label="Identity setup">
+                    <section class="panel">
+                        <div class="panel-heading">
+                            <div>
+                                <p class="eyebrow">Active Identity</p>
+                                <h1>Choose who is posting</h1>
+                            </div>
+                            <span class="status-pill" id="connectionStatus">Loading</span>
+                        </div>
+
+                        <label for="activeUserSelect">Human user</label>
+                        <select id="activeUserSelect">
+                            <option value="">No users found</option>
+                        </select>
+
+                        <div class="identity-card" id="activeUserBadge" hidden>
+                            <div class="avatar" id="activeUserAvatar">U</div>
+                            <div>
+                                <strong id="activeUserUsername">User</strong>
+                                <span id="activeUserRole">Standard Human</span>
+                            </div>
+                        </div>
+
+                        <label for="activeBotSelect">Bot for comments</label>
+                        <select id="activeBotSelect">
+                            <option value="">No bots found</option>
+                        </select>
+                    </section>
+
+                    <section class="panel">
+                        <div class="panel-heading compact">
+                            <div>
+                                <p class="eyebrow">Quick Create</p>
+                                <h2>Users and bots</h2>
+                            </div>
+                        </div>
+
+                        <form class="stack-form" id="quickUserForm">
+                            <label for="regUsername">Username</label>
+                            <input type="text" id="regUsername" minlength="3" maxlength="50" placeholder="dinesh_user" required>
+                            <label class="checkbox-row" for="regPremium">
+                                <input type="checkbox" id="regPremium">
+                                <span>Premium account</span>
+                            </label>
+                            <button type="submit" class="btn btn-primary">Create User</button>
+                        </form>
+
+                        <form class="stack-form divided" id="quickBotForm">
+                            <label for="regBotName">Bot name</label>
+                            <input type="text" id="regBotName" minlength="2" maxlength="50" placeholder="helper_bot" required>
+                            <label for="regBotPersona">Persona</label>
+                            <input type="text" id="regBotPersona" maxlength="500" placeholder="Friendly assistant bot" required>
+                            <button type="submit" class="btn btn-secondary">Create Bot</button>
+                        </form>
+                    </section>
+                </aside>
+
+                <section class="feed-column" aria-label="Feed">
+                    <section class="composer panel">
+                        <div class="panel-heading">
+                            <div>
+                                <p class="eyebrow">Create Post</p>
+                                <h2>Publish to the feed</h2>
+                            </div>
+                            <span class="muted">Author: <strong id="activeUserPublishLabel">None</strong></span>
+                        </div>
+
+                        <form id="createPostForm">
+                            <textarea id="postContent" rows="4" maxlength="1000" placeholder="Write a post..." required></textarea>
+                            <div class="form-footer">
+                                <span id="postCharCount">0 / 1000</span>
+                                <button type="submit" class="btn btn-primary" id="submitPostBtn">Publish</button>
+                            </div>
+                        </form>
+                    </section>
+
+                    <section class="feed-panel panel">
+                        <div class="panel-heading">
+                            <div>
+                                <p class="eyebrow">Live Feed</p>
+                                <h2>Posts</h2>
+                            </div>
+                            <span class="count-pill" id="feedCount">0 posts</span>
+                        </div>
+                        <div class="posts-feed" id="postsFeed"></div>
+                    </section>
+                </section>
+
+                <aside class="metrics-column" id="activityPanel" aria-label="Metrics and activity">
+                    <section class="panel metrics-panel">
+                        <div class="panel-heading compact">
+                            <div>
+                                <p class="eyebrow">Overview</p>
+                                <h2>Records</h2>
+                            </div>
+                        </div>
+                        <div class="metric-grid">
+                            <div class="metric-card"><span>Humans</span><strong id="metricHumansCount">0</strong></div>
+                            <div class="metric-card"><span>Bots</span><strong id="metricBotsCount">0</strong></div>
+                            <div class="metric-card"><span>Posts</span><strong id="metricPostsCount">0</strong></div>
+                        </div>
+                        <button class="btn btn-secondary full-width" id="seedDatabaseBtn" type="button">Seed Demo Records</button>
+                    </section>
+
+                    <section class="panel log-panel">
+                        <div class="panel-heading compact">
+                            <div>
+                                <p class="eyebrow">Activity</p>
+                                <h2>Event log</h2>
+                            </div>
+                            <button class="btn btn-ghost btn-small" id="clearLogsBtn" type="button">Clear</button>
+                        </div>
+                        <div class="warning-log-container" id="warningLogs">
+                            <div class="log-entry">Console initialized.</div>
+                        </div>
+                    </section>
+                </aside>
+            </div>
+        </section>
+
+        <section class="screen-section comments-section" id="commentsPanel" aria-label="Comment thread">
+            <div class="comments-layout panel">
+                <div class="panel-heading comments-heading">
+                    <div>
+                        <p class="eyebrow">Selected Thread</p>
+                        <h2 id="commentsActivePostTitle">Select a post to view comments</h2>
+                    </div>
+                    <button class="btn btn-secondary btn-small" id="closeCommentsBtn" type="button">Close Thread</button>
+                </div>
+
+                <form class="comment-composer" id="commentForm">
+                    <input type="hidden" id="replyParentId" value="">
+                    <div class="reply-row">
+                        <strong id="replyingToIndicator">Replying to Post</strong>
+                        <button type="button" class="btn btn-ghost btn-small" id="cancelReplyBtn" hidden>Cancel Reply</button>
+                    </div>
+
+                    <div class="comment-controls">
+                        <label for="commentAuthorType">
+                            Author type
+                            <select id="commentAuthorType">
+                                <option value="USER">Human user</option>
+                                <option value="BOT">Bot</option>
+                            </select>
+                        </label>
+                        <div class="selected-author">
+                            <span>Author identity</span>
+                            <strong id="selectedCommentAuthorName">N/A</strong>
+                        </div>
+                    </div>
+
+                    <textarea id="commentContent" rows="3" maxlength="1000" placeholder="Write a comment or reply..." required></textarea>
+                    <div class="form-footer">
+                        <span id="commentCharCount">0 / 1000</span>
+                        <button type="submit" class="btn btn-primary" id="submitCommentBtn">Post Comment</button>
+                    </div>
+                </form>
+
+                <div class="comment-tree-container" id="commentsTree">
+                    <div class="empty-state">
+                        <strong>No post selected</strong>
+                        <span>Choose a post from the feed to open its comment thread.</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+    <script src="/js/app.js?v=2"></script>
+</body>
+</html>

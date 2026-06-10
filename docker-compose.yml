@@ -1,0 +1,32 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: my-spring-app
+
+    ports:
+      - "9091:9091"
+
+    depends_on:
+      - postgres
+      - redis
+
+  postgres:
+    image: postgres:15
+    container_name: my-postgres
+
+    environment:
+      POSTGRES_DB: testdb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 534553
+
+    ports:
+      - "5433:5432"
+
+  redis:
+    image: redis:7
+    container_name: my-redis
+
+    ports:
+      - "6379:6379"
