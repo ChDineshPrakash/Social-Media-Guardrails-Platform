@@ -13,10 +13,14 @@ import com.example.demo.dto.PostRequestDto;
 public class PostService {
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final ViralityService viralityService;
 
-    public PostService(PostRepository postRepository, UserRepository userRepository) {
+    public PostService(PostRepository postRepository,
+                       UserRepository userRepository,
+                       ViralityService viralityService) {
         this.postRepository = postRepository;
         this.userRepository = userRepository;
+        this.viralityService = viralityService;
     }
 
     public Post createPost(PostRequestDto dto) {
@@ -29,14 +33,18 @@ public class PostService {
         post.setAuthorId(dto.getAuthorId());
         post.setContent(dto.getContent());
         post.setCreatedAt(LocalDateTime.now());
-        return postRepository.save(post);
+        Post savedPost=postRepository.save(post);
+        viralityService.initializeViralityScore(savedPost.getId());
+        return savedPost;
     }
 
     public Post getPostById(Long id) {
         return postRepository.findById(id).orElse(null);
     }
-
     public List<Post> getAllPosts() {
         return postRepository.findAll();
+    }
+    public Long getViralityScore(Long postId){
+        return viralityService.getViralityScore(postId);
     }
 }

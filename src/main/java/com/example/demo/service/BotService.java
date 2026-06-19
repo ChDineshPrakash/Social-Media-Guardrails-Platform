@@ -3,14 +3,13 @@ package com.example.demo.service;
 import com.example.demo.entity.Bot;
 import com.example.demo.repository.BotRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-
 import com.example.demo.dto.BotRequestDto;
 
 @Service
 public class BotService {
     private final BotRepository botRepository;
+
     public BotService(BotRepository botRepository){
         this.botRepository=botRepository;
     }

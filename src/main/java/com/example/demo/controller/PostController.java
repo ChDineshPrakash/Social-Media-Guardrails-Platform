@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.Post;
 import com.example.demo.service.PostService;
+import com.example.demo.service.ViralityService;
 import org.springframework.web.bind.annotation.*;
 
 import com.example.demo.dto.PostRequestDto;
@@ -13,14 +14,13 @@ public class PostController {
     private final PostService postService;
 
     public PostController(PostService postService) {
-        this.postService = postService;
+        this.postService=postService;
     }
 
     @PostMapping
     public Post createPost(@Valid @RequestBody PostRequestDto postRequestDto) {
         return postService.createPost(postRequestDto);
     }
-
     @GetMapping
     public java.util.List<Post> getAllPosts() {
         return postService.getAllPosts();
@@ -39,5 +39,9 @@ public class PostController {
     public String likePost(@PathVariable Long postId, @RequestParam Long userId) {
         // Stub: This will be connected to Redis Virality logic in Phase 3
         return "Post with ID " + postId + " was liked by User " + userId + ". (Virality Score will be updated in Phase 3)";
+    }
+    @GetMapping("/{postId}/virality")
+    public Long getViralityScore(@PathVariable Long postId){
+        return postService.getViralityScore(postId);
     }
 }
